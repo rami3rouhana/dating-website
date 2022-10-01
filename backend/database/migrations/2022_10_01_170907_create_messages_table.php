@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('mates_id');
             $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('mates_id')->references('id')->on('users')->onDelete('cascade');
-            $table->string("messages");
+            $table->string("messages")->nullable(false)->change();
             $table->timestamps();
         });
     }
