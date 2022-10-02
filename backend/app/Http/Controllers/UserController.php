@@ -17,6 +17,7 @@ class UserController extends Controller
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
+
     public function login(Request $request)
     {
         $request->validate([
@@ -35,10 +36,17 @@ class UserController extends Controller
             ], 401);
         }
 
-        $user = Auth::user();
+        $currentUserInfo = Location::get($_SERVER['REMOTE_ADDR']);
+        $user = User::find(Auth::user()->id);
+        
+        if ($currentUserInfo) {
+            $user->location = [$currentUserInfo->latitude, $currentUserInfo->longitude];
+            $user->save();
+        }
+
         return response()->json([
             'status' => 'success',
-            'user' => $user,
+            'user' => Auth::user(),
             'authorisation' => [
                 'token' => $token,
                 'type' => 'bearer',
@@ -104,10 +112,7 @@ class UserController extends Controller
         $user->location = $request->location ? $request->location : $user->location;
         $user->image = $request->image ? $request->image : $user->image;
         $user->password = $request->password ? Hash::make($request->password) : $user->password;
-        // $ip = '162.159.24.227'; /* Static IP address */
-        // $currentUserInfo = Location::get($ip);    
-        // print_r($currentUserInfo);          
-        print_r($_SERVER['REMOTE_ADDR']);
+
         if ($user->save()) {
             return response()->json([
                 'status' => 'success',
