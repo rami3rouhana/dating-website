@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('age');
             $table->string('location');
             $table->string('bio');
+            $table->string('image');
             $table->string('email')->unique();
             $table->string('password');
             $table->timestamps();
