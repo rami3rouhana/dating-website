@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('relationships_table', function (Blueprint $table) {
+        Schema::create('relationships', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedBigInteger('users_id');
             $table->unsignedBigInteger('mates_id');
@@ -32,7 +32,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('relationship_table', function (Blueprint $table) {
+        Schema::table('relationship', function (Blueprint $table) {
             $table->dropForeign('lists_user_id_foreign');
             $table->dropIndex('lists_user_id_index');
             $table->dropColumn('user_id');

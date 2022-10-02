@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('messages_table', function (Blueprint $table) {
+        Schema::create('messages', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedBigInteger('users_id');
             $table->unsignedBigInteger('mates_id');
             $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('mates_id')->references('id')->on('users')->onDelete('cascade');
-            $table->string("messages")->nullable(false);
+            $table->string("message")->nullable(false);
             $table->timestamps();
         });
     }
@@ -31,7 +31,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('messages_table', function (Blueprint $table) {
+        Schema::table('messages', function (Blueprint $table) {
             $table->dropForeign('lists_user_id_foreign');
             $table->dropIndex('lists_user_id_index');
             $table->dropColumn('user_id');
