@@ -17,9 +17,12 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('age');
-            $table->string('location');
+            $table->float('latitude');
+            $table->float('longitude');
             $table->string('bio');
             $table->string('image');
+            $table->tinyInteger('gender')->default('0');
+            $table->tinyInteger('intersted_in')->default('4');
             $table->string('email')->unique();
             $table->string('password');
             $table->timestamps();
