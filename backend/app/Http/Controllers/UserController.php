@@ -36,11 +36,12 @@ class UserController extends Controller
             ], 401);
         }
 
-        $currentUserInfo = Location::get($_SERVER['REMOTE_ADDR']);
+        $currentUserInfo = Location::get('185.72.217.91');
         $user = User::find(Auth::user()->id);
-        
+
         if ($currentUserInfo) {
-            $user->location = [$currentUserInfo->latitude, $currentUserInfo->longitude];
+            $user->latitude = $currentUserInfo->latitude;
+            $user->longitude = $currentUserInfo->longitude;
             $user->save();
         }
 
@@ -62,8 +63,19 @@ class UserController extends Controller
         $user->bio = $request->bio;
         $user->email = $request->email;
         $user->age = $request->age;
-        $user->location = $request->location;
-        $user->image = $request->image;
+
+        // Uploading file to the server
+
+        if ($request->encryptedImage) {
+            $image_no = time(); //imageid
+            $image = base64_decode($request->encryptedImage);
+            $path = "uploads/" . $image_no . "." . $request->extension;
+            file_put_contents($path, $image);
+            $user->image = $path;
+        }
+
+        $user->gender = $request->gender;
+        $user->intersted_in = $request->intersted_in;
         $user->password = Hash::make($request->password);
 
         if ($user->save()) {
@@ -109,9 +121,20 @@ class UserController extends Controller
         $user->bio = $request->bio ? $request->bio : $user->bio;
         $user->email = $request->email ? $request->email : $user->email;
         $user->age = $request->age ? $request->age : $user->age;
-        $user->location = $request->location ? $request->location : $user->location;
-        $user->image = $request->image ? $request->image : $user->image;
+
+        if ($request->encryptedImage) {
+            $image_no = time(); //imageid
+            $image = base64_decode($request->encryptedImage);
+            $path = "uploads/" . $image_no . "." . $request->extension;
+            file_put_contents($path, $image);
+            $user->image = $path;
+        }
+        
+        $user->gender = $request->gender ? $request->gender : $user->gender;
+        $user->intersted_in = $request->intersted_in ? $request->intersted_in : $user->intersted_in;
+        $user->invisible = $request->invisible ? $request->invisible : $user->invisible;
         $user->password = $request->password ? Hash::make($request->password) : $user->password;
+
 
         if ($user->save()) {
             return response()->json([
