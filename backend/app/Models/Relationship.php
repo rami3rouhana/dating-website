@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class Relationship extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -21,7 +21,7 @@ class User extends Authenticatable
         'users_id',
         'mates_id',
         'message',
-        'favourite',
+        'favorite',
         'blocked'
     ];
 
