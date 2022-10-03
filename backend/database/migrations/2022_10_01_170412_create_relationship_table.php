@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('mates_id');
             $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('mates_id')->references('id')->on('users')->onDelete('cascade');
-            $table->tinyInteger('favorites')->default('0');
+            $table->tinyInteger('favorite')->default('0');
             $table->tinyInteger('blocked')->default('0');
             $table->timestamps();
         });
