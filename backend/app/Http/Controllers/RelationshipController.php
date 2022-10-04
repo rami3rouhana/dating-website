@@ -8,12 +8,6 @@ use App\Models\User;
 
 class RelationshipController extends Controller
 {
-
-    public function __construct()
-    {
-        $this->middleware('auth:api');
-    }
-
     public function getUsers()
     {
 
@@ -21,36 +15,36 @@ class RelationshipController extends Controller
             $users = User::select(
                 "*",
                 User::raw("6371 * acos(cos(radians(" . Auth::user()->longitude . ")) 
-            * cos(radians(users.latitude)) 
-            * cos(radians(users.longitude) - radians(" . Auth::user()->longitude . ")) 
-            + sin(radians(" . Auth::user()->longitude . ")) 
-            * sin(radians(users.latitude))) AS distance")
+                            * cos(radians(users.latitude)) 
+                            * cos(radians(users.longitude) - radians(" . Auth::user()->longitude . ")) 
+                            + sin(radians(" . Auth::user()->longitude . ")) 
+                            * sin(radians(users.latitude))) AS distance")
             )
-            ->where([
-                ['users.id', '<>', Auth::user()->id],
-                ['users.invisible', 0]
+                ->where([
+                    ['users.id', '<>', Auth::user()->id],
+                    ['users.invisible', 0]
                 ])
                 ->whereNotIn('users.id', function ($query) {
                     $query->select('mates_id')
                         ->from('relationships')
-                        ->where('favorite',0)
-                        ->orwhere('blocked',1);
+                        ->where('favorite', 0)
+                        ->orwhere('blocked', 1);
                 })
                 ->whereNotIn('users.id', function ($query) {
                     $query->select('users_id')
                         ->from('relationships')
-                        ->where('favorite',1)
-                        ->orwhere('blocked',1);
+                        ->where('favorite', 1)
+                        ->orwhere('blocked', 1);
                 })
                 ->get();
         } else {
             $users = User::select(
                 "*",
                 User::raw("6371 * acos(cos(radians(" . Auth::user()->longitude . ")) 
-            * cos(radians(users.latitude)) 
-            * cos(radians(users.longitude) - radians(" . Auth::user()->longitude . ")) 
-            + sin(radians(" . Auth::user()->longitude . ")) 
-            * sin(radians(users.latitude))) AS distance")
+                            * cos(radians(users.latitude)) 
+                            * cos(radians(users.longitude) - radians(" . Auth::user()->longitude . ")) 
+                            + sin(radians(" . Auth::user()->longitude . ")) 
+                            * sin(radians(users.latitude))) AS distance")
             )
                 ->where('id', '<>', Auth::user()->id)
                 ->where('invisible', 0)
@@ -58,19 +52,17 @@ class RelationshipController extends Controller
                 ->whereNotIn('users.id', function ($query) {
                     $query->select('mates_id')
                         ->from('relationships')
-                        ->where('favorite',0)
-                        ->orwhere('blocked',1);
+                        ->where('favorite', 0)
+                        ->orwhere('blocked', 1);
                 })
                 ->whereNotIn('users.id', function ($query) {
                     $query->select('users_id')
                         ->from('relationships')
-                        ->where('favorite',1)
-                        ->orwhere('blocked',1);
+                        ->where('favorite', 1)
+                        ->orwhere('blocked', 1);
                 })
                 ->get();
         }
-
-
 
         if ($users) {
             return response()->json([
@@ -87,22 +79,28 @@ class RelationshipController extends Controller
     public function getFavorites()
     {
         $favorites = Relationship::where([
-            ['mates_id', Auth::user()->id],
+            ['users_id', '=', Auth::user()->id],
             ['favorite', 1],
             ['blocked', 0]
         ])
-            ->orwhere([
-                ['users_id', '=', Auth::user()->id],
+            ->get();
+
+        $result = [];
+
+        foreach ($favorites as $favorite) {
+            $result[] = Relationship::where([
+                ['mates_id', '=', Auth::user()->id],
+                ['users_id', '=', $favorite->mates_id],
                 ['favorite', 1],
                 ['blocked', 0]
             ])
-            ->join('users', 'users.id', '=', 'Relationships.mates_id')
-            ->get();
-
+                ->join('users', 'users.id', '=', 'Relationships.users_id')
+                ->get();
+        }
 
         return response()->json([
             'status' => 'success',
-            'favorite' => $favorites,
+            'favorite' => $result,
             'authorisation' => [
                 'token' => Auth::refresh(),
                 'type' => 'bearer',
@@ -113,15 +111,10 @@ class RelationshipController extends Controller
     public function getBlocked()
     {
         $blocked = Relationship::where([
-            ['mates_id', Auth::user()->id],
+            ['users_id', '=', Auth::user()->id],
             ['favorite', 0],
             ['blocked', 1]
         ])
-            ->orwhere([
-                ['users_id', '=', Auth::user()->id],
-                ['favorite', 0],
-                ['blocked', 1]
-            ])
             ->join('users', 'users.id', '=', 'Relationships.mates_id')
             ->get();
 
@@ -153,7 +146,7 @@ class RelationshipController extends Controller
                 $relationship->mates_id = $id;
                 $relationship->favorite = 1;
             } else {
-                $relationship->favorite === 0 ? $relationship->favorite = 1 : $relationship->favorite = 0;
+                $relationship->favorite === 0 ? $relationship->favorite = 1 && $relationship->blocked = 0 : $relationship->favorite = 0 && $relationship->blocked = 1;
             }
 
             if ($relationship->save()) {
@@ -167,19 +160,13 @@ class RelationshipController extends Controller
             } else {
                 return response()->json([
                     'status' => 'fail',
-                    'authorisation' => [
-                        'token' => Auth::refresh(),
-                        'type' => 'bearer',
-                    ]
+                    'error' => 'Failed to save data.'
                 ]);
             }
         } else {
             return response()->json([
                 'status' => 'fail',
-                'authorisation' => [
-                    'token' => Auth::refresh(),
-                    'type' => 'bearer',
-                ]
+                'error' => 'User ID null.'
             ]);
         }
     }
@@ -201,7 +188,9 @@ class RelationshipController extends Controller
                 $relationship->mates_id = $id;
                 $relationship->blocked = 1;
             } else {
-                $relationship->blocked === 0 ? $relationship->blocked = 1 && $relationship->favorite = 0 : $relationship->blocked = 0;
+                $relationship->blocked === 0 ?
+                    $relationship->blocked = 1 && $relationship->favorite = 0 :
+                    $relationship->blocked = 0 && $relationship->favorite = 1;
             }
 
             if ($relationship->save()) {
@@ -215,19 +204,13 @@ class RelationshipController extends Controller
             } else {
                 return response()->json([
                     'status' => 'fail',
-                    'authorisation' => [
-                        'token' => Auth::refresh(),
-                        'type' => 'bearer',
-                    ]
+                    'error' => 'Failed to save data.'
                 ]);
             }
         } else {
             return response()->json([
                 'status' => 'fail',
-                'authorisation' => [
-                    'token' => Auth::refresh(),
-                    'type' => 'bearer',
-                ]
+                'error' => 'User ID null.'
             ]);
         }
     }
