@@ -6,78 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
     <link rel="stylesheet" href="styles.css">
+    <script>
+        const module = {};
+    </script>
 </head>
 <body>
     <div class="navigation">
         <ul>
             <li class="active"><a href="favorites.html">Favorites</a></li>
             <li><a href="dates.html">Dates</a></li>
+            <li><a href="profile.html">Profile</a></li>
             <li><a id="logout-btn" href="#">Logout</a></li>
           </ul>
       </div>
       <div class="favorites">
-        <div class="cards favorites">
-            <div class="card">
-                <img src="./12345.jpg" alt="Avatar" >
-                <div class="container">
-                  <h4><b>John Doe</b></h4>
-                  <p>Architect & Engineer</p>
-                </div>
-                <button class="button change" role="button">Message</button>
-                <button class="button block" role="button">Block</button>
-                <button class="button remove" role="button">Remove Favorites</button>
-              </div>
-              <div class="card">
-                <img src="./12345.jpg" alt="Avatar" >
-                <div class="container">
-                  <h4><b>John Doe</b></h4>
-                  <p>Architect & Engineer</p>
-                </div>
-                <button class="button change" role="button">Message</button>
-                <button class="button block" role="button">Block</button>
-                <button class="button remove" role="button">Remove Favorites</button>
-              </div>
-              <div class="card">
-                <img src="./12345.jpg" alt="Avatar" >
-                <div class="container">
-                  <h4><b>John Doe</b></h4>
-                  <p>Architect & Engineer</p>
-                </div>
-                <button class="button change" role="button">Message</button>
-                <button class="button block" role="button">Block</button>
-                <button class="button remove" role="button">Remove Favorites</button>
-              </div>
-              <div class="card">
-                <img src="./12345.jpg" alt="Avatar" >
-                <div class="container">
-                  <h4><b>John Doe</b></h4>
-                  <p>Architect & Engineer</p>
-                </div>
-                <button class="button change" role="button">Message</button>
-                <button class="button block" role="button">Block</button>
-                <button class="button remove" role="button">Remove Favorites</button>
-              </div>
-              <div class="card">
-                <img src="./12345.jpg" alt="Avatar" >
-                <div class="container">
-                  <h4><b>John Doe</b></h4>
-                  <p>Architect & Engineer</p>
-                </div>
-                <button class="button change" role="button">Message</button>
-                <button class="button block" role="button">Block</button>
-                <button class="button remove" role="button">Remove Favorites</button>
-              </div>
-              <div class="card">
-                <img src="./12345.jpg" alt="Avatar" >
-                <div class="container">
-                  <h4><b>John Doe</b></h4>
-                  <p>Architect & Engineer</p>
-                </div>
-                <button class="button change" role="button">Message</button>
-                <button class="button block" role="button">Block</button>
-                <button class="button remove" role="button">Remove Favorites</button>
-              </div>
+        <div id="favorite-cards" class="cards favorites">
           </div>
       </div>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      <script type="module">
+       import {dating_pages} from './scripts/index.js'
+       dating_pages.loadFor("favorites");
+       module.message = dating_pages.message;
+       module.block = dating_pages.block;
+       </script>
 </body>
 </html>
