@@ -7,16 +7,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Stevebauman\Location\Facades\Location;
 use App\Models\User;
-use Symfony\Component\Mime\Header\Headers;
+use Intervention\Image\Facades\Image;
 
 class UserController extends Controller
 {
-
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
-    }
-
 
     public function login(Request $request)
     {
@@ -36,7 +30,7 @@ class UserController extends Controller
             ], 401);
         }
 
-        $currentUserInfo = Location::get('185.72.217.91');
+        $currentUserInfo = Location::get($_SERVER['REMOTE_ADDR']);
         $user = User::find(Auth::user()->id);
 
         if ($currentUserInfo) {
@@ -65,13 +59,12 @@ class UserController extends Controller
         $user->age = $request->age;
 
         // Uploading file to the server
-
         if ($request->encryptedImage) {
             $image_no = time(); //imageid
             $image = base64_decode($request->encryptedImage);
-            $path = "uploads/" . $image_no . "." . $request->extension;
+            $path = storage_path('images\\')  . $image_no . "." . $request->extension;
             file_put_contents($path, $image);
-            $user->image = $path;
+            $user->image = $image_no . "." . $request->extension;
         }
 
         $user->gender = $request->gender;
@@ -101,6 +94,12 @@ class UserController extends Controller
         ]);
     }
 
+    public function shareImages($filename)
+    {
+        return Image::make(storage_path('images\\' . $filename))->response();
+    
+    }
+
     public function refresh()
     {
         return response()->json([
@@ -125,11 +124,11 @@ class UserController extends Controller
         if ($request->encryptedImage) {
             $image_no = time(); //imageid
             $image = base64_decode($request->encryptedImage);
-            $path = "uploads/" . $image_no . "." . $request->extension;
+            $path = storage_path('images\\')  . $image_no . "." . $request->extension;
             file_put_contents($path, $image);
-            $user->image = $path;
+            $user->image = $image_no . "." . $request->extension;
         }
-        
+
         $user->gender = $request->gender ? $request->gender : $user->gender;
         $user->intersted_in = $request->intersted_in ? $request->intersted_in : $user->intersted_in;
         $user->invisible = $request->invisible ? $request->invisible : $user->invisible;
