@@ -1,31 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login / Register</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div id="login-box">
-        <div class="left">
-          <h1>Sign up</h1>
-          <input type="text" name="username" placeholder="Username" />
-          <input type="text" name="email" placeholder="E-mail" />
-          <input type="password" name="password" placeholder="Password" />
-          <input type="password" name="password2" placeholder="Retype password" />
-          <input type="submit" name="signup_submit" value="Sign me up" />
+  <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Login / Register</title>
+      <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+      <div id="login-box">
+          <div class="left">
+            <h1>Sign up</h1>
+            <input id="name-register" type="text" name="username" placeholder="Name" />
+            <input id="email-register" type="text" name="email" placeholder="E-mail" />
+            <input id="password-register"  type="password" name="password" placeholder="Password" />
+            <input id="age-register" type="number" placeholder="Age" />
+            <input id="bio-register" type="text" placeholder="Bio" />
+            <label for="gender">Choose a gender:</label>
+            <select name="gender" id="gender">
+              <option value="1">Male</option>
+              <option value="2">Female</option>
+              <option value="3">Non Binary</option>
+            </select>
+            <label for="instested-in">Choose your intrest:</label>
+            <select name="instested-in" id="instested-in">
+              <option value="1">Male</option>
+              <option value="2">Female</option>
+              <option value="3">Non Binary</option>
+              <option value="4">Eveyone</option>
+            </select>
+            <input id="image-register" type="file" />
+            <button class="landing-page-button" id="register-btn" name="signup_submit">Sign me up</button>
+          </div>
+          <div class="right">
+            <h1>Login</h1>
+            <input id="email-login" type="text" name="email" placeholder="E-mail" />
+            <input id="password-login" type="password" name="password" placeholder="Password" />
+            <button class="landing-page-button" id="login-btn" name="login_submit">Login</button>
+          </div>
+          <div class="or">OR</div>
         </div>
-        
-        <div class="right">
-          <span class="loginwith">Sign in with<br />social network</span>
-          <h1>Login</h1>
-          <input type="text" name="email" placeholder="E-mail" />
-          <input type="password" name="password" placeholder="Password" />
-          <input type="submit" name="login_submit" value="Login" />
-        </div>
-        <div class="or">OR</div>
-      </div>
-</body>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script type="module">
+          import {dating_pages} from './scripts/index.js'
+          dating_pages.loadFor("landing");
+          </script>
+  </body>
 </html>
