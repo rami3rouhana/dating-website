@@ -9,12 +9,6 @@ use App\Models\Message;
 
 class MessageController extends Controller
 {
-
-    public function __construct()
-    {
-        $this->middleware('auth:api');
-    }
-
     public function sendMessage(Request $request)
     {
         $message = new Message;
@@ -26,6 +20,7 @@ class MessageController extends Controller
         if ($message->save()) {
             return response()->json([
                 'status' => 'success',
+                'user' => Auth::user(),
                 'authorisation' => [
                     'token' => Auth::refresh(),
                     'type' => 'bearer',
@@ -45,22 +40,26 @@ class MessageController extends Controller
                     ['mates_id', '=', $id],
                     ['users_id', '=', Auth::user()->id]
                 ])
+                ->join('users', 'users.id', '=', 'messages.mates_id')
                 ->get();
-            
-            foreach($messages as $message){
-                print_r($message->message = Crypt::decryptString($message->message)) ;
+
+            foreach ($messages as $message) {
+                $message->message = Crypt::decryptString($message->message);
             }
 
-            if (count($messages)>0) {
-                return response()->json([
-                    'status' => 'success',
-                    'messages' => $messages,
-                    'authorisation' => [
-                        'token' => Auth::refresh(),
-                        'type' => 'bearer',
-                    ]
-                ]);
-            }
+            return response()->json([
+                'status' => 'success',
+                'messages' => $messages,
+                'authorisation' => [
+                    'token' => Auth::refresh(),
+                    'type' => 'bearer',
+                ]
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'messages' => 'Id not set',
+            ]);
         }
     }
 }
