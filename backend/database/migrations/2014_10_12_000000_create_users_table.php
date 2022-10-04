@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('age');
-            $table->float('latitude');
-            $table->float('longitude');
+            $table->float('latitude')->nullable()->change();
+            $table->float('longitude')->nullable()->change();
             $table->string('bio');
             $table->string('image');
             $table->tinyInteger('gender')->default('0');
